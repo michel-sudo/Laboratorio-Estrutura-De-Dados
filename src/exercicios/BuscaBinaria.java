@@ -1,4 +1,4 @@
-package faculdade;
+package exercicios;
 
 public class BuscaBinaria {
 

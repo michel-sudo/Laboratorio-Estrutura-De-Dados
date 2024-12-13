@@ -1,4 +1,4 @@
-package faculdade;
+package exercicios;
 import java.util.Scanner;
 import java.util.HashSet;
 
