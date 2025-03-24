@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
 
-public class BsfDireita {
+public class BstSomaFolhas {
 
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
-        BST1 bst = new BST1();
+        BST2 bst = new BST2();
 
         String[] in = sc.nextLine().split(" ");
         sc.close();
@@ -18,17 +18,15 @@ public class BsfDireita {
             bst.add(Integer.parseInt(in[i]));
         }
 
-        String out = bst.bsfDireita().toString();
-        out = out.replace("[", "").replace("]", "").replace(",", "");
-
+        int out = bst.somaFolhas();
         System.out.println(out);
     }
 
 }
 
-class BST1 {
+class BST2 {
     
-    private Node1 root;
+    private Node2 root;
     private int size;
     
     public boolean isEmpty() {
@@ -42,16 +40,16 @@ class BST1 {
     public void add(int element) {
         this.size += 1;
         if (isEmpty())
-        this.root = new Node1(element);
+        this.root = new Node2(element);
         else {
             
-            Node1 aux = this.root;
+            Node2 aux = this.root;
             
             while (aux != null) {
                 
                 if (element < aux.value) {
                     if (aux.left == null) { 
-                        Node1 newNode = new Node1(element);
+                        Node2 newNode = new Node2(element);
                         aux.left = newNode;
                         newNode.parent = aux;
                         return;
@@ -60,7 +58,7 @@ class BST1 {
                     aux = aux.left;
                 } else {
                     if (aux.right == null) { 
-                        Node1 newNode = new Node1(element);
+                        Node2 newNode = new Node2(element);
                         aux.right = newNode;
                         newNode.parent = aux;
                         return;
@@ -81,9 +79,9 @@ class BST1 {
      * @return O nó contendo o elemento procurado. O método retorna null caso
      * o elemento não esteja presente na árvore.
      */
-    public Node1 search(int element) {
+    public Node2 search(int element) {
         if (this.isEmpty()) throw new RuntimeException("Empty BST");
-        Node1 aux = this.root;
+        Node2 aux = this.root;
         
         while (aux != null){
             if(aux.value == element) return aux;
@@ -102,13 +100,13 @@ class BST1 {
         return height(this.root);
     }
 
-    public int height(Node1 node){
+    public int height(Node2 node){
         if(node == null) return -1;
         else return 1 + Math.max(height(node.left), height(node.right));
     }
 
     
-    public boolean equals(BST1 outra) {
+    public boolean equals(BST2 outra) {
         ArrayList<Integer> currentBST = this.preOrder();
         ArrayList<Integer> ottBST = outra.preOrder();
         return currentBST.equals(ottBST);
@@ -121,7 +119,7 @@ class BST1 {
         return listBst;
     }
     
-    private void preOrder(Node1 node, ArrayList<Integer> listBst){
+    private void preOrder(Node2 node, ArrayList<Integer> listBst){
         if(node != null) {
             listBst.add(node.value);
             preOrder(node.left, listBst);
@@ -139,14 +137,25 @@ class BST1 {
         return contaRecFolha(this.root);
     }
     
-    private int contaRecFolha(Node1 node) {
+    private int contaRecFolha(Node2 node) {
         if (node == null) return 0;
         if (node.isLeaf()) return 1;
         return contaRecFolha(node.left) + contaRecFolha(node.right);  
     }
+
+    public int somaFolhas() {
+        if (isEmpty()) return -1;
+        return somaFolhasRec(root);
+    }
+
+    private int somaFolhasRec(Node2 node){
+        if (node == null) return 0;
+        if (node.isLeaf()) return node.value;
+        return somaFolhasRec(node.left) + somaFolhasRec(node.right);
+    }
     
     public ArrayList<Integer> bsfDireita(){
-        Queue<Node1> fila = new ArrayDeque<Node1>();
+        Queue<Node2> fila = new ArrayDeque<Node2>();
         ArrayList<Integer> out = new ArrayList<Integer>(this.size());
         fila.add(this.root);
         
@@ -154,21 +163,20 @@ class BST1 {
             if (fila.peek().left != null) fila.add(fila.peek().left);
             if (fila.peek().right != null) fila.add(fila.peek().right);
             out.add(fila.remove().value);
-            //System.out.println(out.toString()); 
         }
 
         return out;
     }
     
     public ArrayList<Integer> predescessor(int value){
-        Node1 aux = search(value);
+        Node2 aux = search(value);
         return maxBst(aux);
     }
 
-    private ArrayList<Integer> maxBst(Node1 node){
+    private ArrayList<Integer> maxBst(Node2 node){
         ArrayList<Integer> listNode = new ArrayList<Integer>();
         listNode.add(node.value);
-        Node1 aux = node.left;
+        Node2 aux = node.left;
         
         if (aux == null){
             if(node.parent == null){
@@ -206,14 +214,14 @@ class BST1 {
 }
 
 
-class Node1 {
+class Node2 {
     
     int value;
-    Node1 left;
-    Node1 right;
-    Node1 parent;
+    Node2 left;
+    Node2 right;
+    Node2 parent;
     
-    Node1(int v) {
+    Node2(int v) {
         this.value = v;
     }
     

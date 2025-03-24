@@ -141,7 +141,7 @@ class Node {
     }
     
     public boolean isLeaf(){
-        if(right == null && right == null) return true;
+        if(left == null && right == null) return true;
         return false;
     }
 }
