@@ -18,10 +18,9 @@ public class BsfDireita {
             bst.add(Integer.parseInt(in[i]));
         }
 
-        String out = bst.bsfDireita().toString();
-        out = out.replace("[", "").replace("]", "").replace(",", "");
+        String out = bst.bsfDireita();
 
-        System.out.println(out);
+        System.out.println(out.trim());
     }
 
 }
@@ -129,8 +128,6 @@ class BST1 {
         }
     }
 
-    
-    
     /**
      * Retorna o número de folhas da árvore.
      */
@@ -145,16 +142,17 @@ class BST1 {
         return contaRecFolha(node.left) + contaRecFolha(node.right);  
     }
     
-    public ArrayList<Integer> bsfDireita(){
+    public String bsfDireita(){
+        if(this.root == null) return "";
         Queue<Node1> fila = new ArrayDeque<Node1>();
-        ArrayList<Integer> out = new ArrayList<Integer>(this.size());
+        String out = "";
         fila.add(this.root);
         
         while (!fila.isEmpty()){
-            if (fila.peek().left != null) fila.add(fila.peek().left);
-            if (fila.peek().right != null) fila.add(fila.peek().right);
-            out.add(fila.remove().value);
-            //System.out.println(out.toString()); 
+            Node1 node = fila.remove();
+            out += Integer.toString(node.value) + " ";
+            if (node.right != null) fila.add(node.right);
+            if (node.left != null) fila.add(node.left);
         }
 
         return out;

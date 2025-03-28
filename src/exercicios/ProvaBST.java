@@ -1,34 +1,46 @@
 package exercicios;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Queue;
-import java.util.Scanner;
 
-public class BstPredescessor {
-
+class ProvaBST {
     public static void main(String[] args){
-        Scanner sc = new Scanner(System.in);
-        BST3 bst = new BST3();
-
-        String[] in = sc.nextLine().split(" ");
-        int value = sc.nextInt();
-        sc.close();
+        BST4 bst = new BST4();
+        Kesimo km = new Kesimo();
+        int[] nums = {52, 22, 85, 8, 43, 81, 96, 11, 26, 69, 74};
         
-        for (int i = 0; i < in.length; i++){
-            bst.add(Integer.parseInt(in[i]));
+        for (int n : nums){
+            bst.add(n);
         }
 
-        String out = bst.predescessor(value).toString();
-        System.out.println(out);
-        System.out.println(bst.contaNosInternos());
+        System.out.println(km.kesimo(new int[]{3, 2, 1, 5, 6, 4}, 2));
+        System.out.println(km.kesimo(new int[]{13, 9, 5, 2, 87, 4}, 3));
+        System.out.println(bst.printNivel(2));
+    }
+}
+
+class Kesimo {
+    public int kesimo(int[] nums, int k){
+        ArrayList<Integer> auxNums = new ArrayList<Integer>();
+        for (int n : nums){
+            auxNums.add(n);
+        }
+
+        int iMaior = 0;
+        for (int j = 0; j < k; j++){
+            for (int i = 1; i < auxNums.size(); i++){
+                if (auxNums.get(iMaior) < auxNums.get(i)) iMaior = i;
+            }
+            auxNums.remove(iMaior); 
+        }
+
+        return nums[iMaior];
     }
 
 }
 
-class BST3 {
-    
-    private Node3 root;
+class BST4 {
+
+    private Node root;
     private int size;
     
     public boolean isEmpty() {
@@ -42,15 +54,16 @@ class BST3 {
     public void add(int element) {
         this.size += 1;
         if (isEmpty())
-        this.root = new Node3(element);
+            this.root = new Node(element);
         else {
             
-            Node3 aux = this.root;
+            Node aux = this.root;
             
             while (aux != null) {
+                
                 if (element < aux.value) {
                     if (aux.left == null) { 
-                        Node3 newNode = new Node3(element);
+                        Node newNode = new Node(element);
                         aux.left = newNode;
                         newNode.parent = aux;
                         return;
@@ -59,7 +72,7 @@ class BST3 {
                     aux = aux.left;
                 } else {
                     if (aux.right == null) { 
-                        Node3 newNode = new Node3(element);
+                        Node newNode = new Node(element);
                         aux.right = newNode;
                         newNode.parent = aux;
                         return;
@@ -80,9 +93,9 @@ class BST3 {
      * @return O nó contendo o elemento procurado. O método retorna null caso
      * o elemento não esteja presente na árvore.
      */
-    public Node3 search(int element) {
+    public Node search(int element) {
         if (this.isEmpty()) throw new RuntimeException("Empty BST");
-        Node3 aux = this.root;
+        Node aux = this.root;
         
         while (aux != null){
             if(aux.value == element) return aux;
@@ -101,26 +114,25 @@ class BST3 {
         return height(this.root);
     }
 
-    public int height(Node3 node){
+    public int height(Node node){
         if(node == null) return -1;
         else return 1 + Math.max(height(node.left), height(node.right));
     }
 
-    
-    public boolean equals(BST3 outra) {
+
+    public boolean equals(BST outra) {
         ArrayList<Integer> currentBST = this.preOrder();
         ArrayList<Integer> ottBST = outra.preOrder();
         return currentBST.equals(ottBST);
     }
-     
 
     public ArrayList<Integer> preOrder(){     
         ArrayList<Integer> listBst = new ArrayList<Integer>();
         this.preOrder(this.root, listBst);
         return listBst;
     }
-    
-    private void preOrder(Node3 node, ArrayList<Integer> listBst){
+
+    private void preOrder(Node node, ArrayList<Integer> listBst){
         if(node != null) {
             listBst.add(node.value);
             preOrder(node.left, listBst);
@@ -128,86 +140,46 @@ class BST3 {
         }
     }
 
-    public int somaFolhas() {
-        if (isEmpty()) return -1;
-        return somaFolhasRec(root);
-    }
-
-    private int somaFolhasRec(Node3 node){
-        if (node == null) return 0;
-        if (node.isLeaf()) return node.value;
-        return somaFolhasRec(node.left) + somaFolhasRec(node.right);
-    }
-    
     /**
-     * Retorna o número de folhas da árvore.
-     */
+    * Retorna o número de folhas da árvore.
+    */
     public int contaFolhas() {
         if(isEmpty()) return -1;
         return contaRecFolha(this.root);
     }
-    
-    private int contaRecFolha(Node3 node) {
+
+    private int contaRecFolha(Node node) {
         if (node == null) return 0;
         if (node.isLeaf()) return 1;
         return contaRecFolha(node.left) + contaRecFolha(node.right);  
     }
-    
-    public ArrayList<Integer> bsfDireita(){
-        Queue<Node3> fila = new ArrayDeque<Node3>();
-        ArrayList<Integer> out = new ArrayList<Integer>(this.size());
+
+    public String printNivel(int nivel){
+        ArrayList<Node> fila = new ArrayList<Node>();
+        String out = "";
+
         fila.add(this.root);
-        
-        while (!fila.isEmpty()){
-            if (fila.peek().left != null) fila.add(fila.peek().left);
-            if (fila.peek().right != null) fila.add(fila.peek().right);
-            out.add(fila.remove().value);
-            //System.out.println(out.toString()); 
+        while(!fila.isEmpty()){
+
+            Node first = fila.remove(0);
+            if (contaNivel(first) == nivel) out += Integer.toString(first.value) + " ";
+            if (first.left != null) fila.add(first.left);
+            if (first.right != null) fila.add(first.right);
+            
         }
 
-        return out;
-    }
-    
-    public ArrayList<Integer> predescessor(int value){
-        Node3 aux = search(value);
-        return maxBst(aux);
+        return out.trim();
     }
 
-    private ArrayList<Integer> maxBst(Node3 node){
-        ArrayList<Integer> listNode = new ArrayList<Integer>();
-        listNode.add(node.value);
-        Node3 aux = node.left;
-        
-        if (aux == null){
-
-            aux = node.parent;
-            while (aux != null){
-                listNode.add(aux.value);
-                if (aux.value < node.value) break;
-                aux = aux.parent;
-            }
-        } else {
-            listNode.add(aux.value);
-            while (aux.right != null){
-                listNode.add(aux.right.value);
-                aux = aux.right;
-            }
-
+    private int contaNivel(Node node){
+        int countNivel = 0;
+        while (node.parent != null){
+            countNivel += 1;
+            node = node.parent;
         }
-    
-    
-        return listNode;
+        return countNivel;
     }
 
-    public int contaNosInternos(){
-        return contaNosRec(this.root);
-    }
-
-    public int contaNosRec(Node3 node){
-        if(node == null) return 0;
-        if(node.isLeaf()) return 0;
-        return 1 + contaNosRec(node.left) + contaNosRec(node.right);
-    }
     
     /**
      * @return o tamanho da árvore.
@@ -219,14 +191,14 @@ class BST3 {
 }
 
 
-class Node3 {
+class Node {
     
     int value;
-    Node3 left;
-    Node3 right;
-    Node3 parent;
+    Node left;
+    Node right;
+    Node parent;
     
-    Node3(int v) {
+    Node(int v) {
         this.value = v;
     }
     
@@ -235,3 +207,5 @@ class Node3 {
         return false;
     }
 }
+
+
